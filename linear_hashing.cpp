@@ -22,7 +22,7 @@ ifstream file_name;
 vector<set<ll> > v; 		
 vector<ll> output; 
 
-int main(ll argc , char* argv[])
+int main(int argc , char** argv)
 {
 	if(argc != 4)
 	{
