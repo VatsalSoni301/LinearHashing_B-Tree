@@ -164,19 +164,20 @@ string get_type_of_query(string s)
 
 void write_file(vector<string> &v)
 {
-    ll i;
     //cout<<"in write_file\n";
-    ofstream outfile("output.txt", std::ios_base::app);
+
     ll sw=v.size();
     //cout<<sw<<endl;
-    for(i=0;i<sw;++i)
+    ofstream outfile("output.txt", std::ios_base::app);
+    ll i = 0;
+    while(i<sw)
     { 
-        string s = get_type_of_query(l);
-        outfile<<v[i]<<endl;
         cout<<v[i]<<endl;
+        outfile<<v[i]<<endl;
+        i = i + 1;
     }    
-    v.clear();  
     outfile.close();
+    v.clear();  
 }
 
 node* tree::create_node(ll l)
@@ -192,13 +193,12 @@ node* tree::create_node(ll l)
     ne->count=0;                    // count number of keys
     ne->leaf=l;
     ne->ngh=NULL;                       
-    ll i=0;
+    ll i;
 
-    while(i<=order)
+    for(i=0;i<=order;i++)
     {
+        ne->child[i] = NULL;
         ne->duplicate[i] = 1;
-        ne->child[i] = NULL;    
-        i++;
     }    
     ne->child[i] = NULL;        
     return ne;
@@ -210,17 +210,17 @@ void tree::duplicate_inc(node *temp)
     ll fg = 0;
     while(temp)
     {
-        if(item<=temp->data[i]-1 || i==temp->count)
+        if(item<=temp->data[i]-1 || i==temp->count && fg==0)
         {
             temp=temp->child[i];
             i=0;
         }
-        else if(temp->data[i]==item)
+        else if(temp->data[i]==item && fg==0)
         {
             if(!temp->child[0])
             {
-                temp->duplicate[i]+=1;
                 fg = 1;
+                temp->duplicate[i]= temp->duplicate[i] + 1;
                 break;
             }
         }
@@ -239,15 +239,16 @@ void tree::split_node(node *parent,node *temp)
     if(temp==root)
     {
         root=create_node(leaf);
-        root->data[0]=temp->data[order/2];
         parent=root;
+        root->data[0]=temp->data[order/2];
         root->count=root->count+1;
         parent->child[0]=temp;
 
         flag=0;
     }
     
-    for(int y=0;y<parent->count+1;y++)
+    ll y=0;
+    while(y<parent->count+1)
     {
         if(parent->child[y]==temp)
         {
@@ -255,8 +256,7 @@ void tree::split_node(node *parent,node *temp)
 
             while(i>y+1)
             {
-                 ll ab = i - 1;   
-                 parent->child[i]=parent->child[ab];
+                 parent->child[i]=parent->child[i-1];
                  i--;
             }
 
@@ -268,10 +268,13 @@ void tree::split_node(node *parent,node *temp)
                 leaf = 0;
             
             
-            ll z;
+            ll z=0;
             long long limit1 = order/2;
-            for(z = 0;z <= limit1;z++)
+            while(z <= limit1)
+            {
                 (parent -> child[y + 1])->child[z] = temp->child[z + 1 + limit1];
+                z++;
+            }
             
             ll zt = order/2;
             zt++;
@@ -310,6 +313,7 @@ void tree::split_node(node *parent,node *temp)
             }
             break;
         }
+        y++;
     }
 }
 
@@ -355,11 +359,13 @@ ll tree::range_query(ll low,ll high)
         }
         else if(low < temp->data[i] || ((i + 1) == (temp->count + 1)))
         {
-            temp=temp->child[i];
             i=0;
+            temp=temp->child[i];
         }
         else
+        {
             i++;
+        }
     }
     return 0;
 }
@@ -419,22 +425,22 @@ void tree::query_process(vector<string> &out,string l)
         
         node *temp=root;
         
-        while(temp != NULL)
+        while(temp)
         {
-            if(!(temp->child[0]) && temp->data[i]==item)
+            if(temp->data[i] == item && temp->child[0]==NULL)
             {
                 ans = temp->duplicate[i];
                 break;
             }
-            else if((item<=temp->data[i]-1)||i==temp->count)
+            else if((item<=temp->data[i]-1) || i == temp->count)
             {
-                temp=temp->child[i];
                 i = 0;
+                temp=temp->child[i];
             }
             else 
                 i = i + 1;
         }
-        if(temp == NULL)
+        if(!temp)
             ans = 0;
 
         out.push_back(to_string(ans));
@@ -445,26 +451,26 @@ void tree::query_process(vector<string> &out,string l)
         t.setdata(stoi(l.substr(5)));
         
         ll i=0;
-        ll ans;
         node *temp=root;
+        ll ans;
 
-        while(temp!=NULL)
+        while(temp)
         {
-            if(!(temp->child[0]) && temp->data[i]==item)
+            if(temp->child[0]==NULL && temp->data[i] == item)
             {
                 ans = temp->duplicate[i];
                 break;
             }
 
-            else if((item<=temp->data[i]-1) || i==temp->count)
+            else if((item<=temp->data[i]-1) || i == temp->count)
             {
-                temp=temp->child[i];
                 i=0;
+                temp=temp->child[i];
             }
             else
                 i++;
         }
-        if(temp==NULL)
+        if(!temp)
             ans = 0;
 
         string s1 = getString(ans);
@@ -514,8 +520,9 @@ void tree::insert(node *parent , node *temp)
     }
     else
     {
-        ll i;
-        for(i=0;i<=temp->count-1;i=i+1)
+        ll i=0;
+        ll c = temp->count;
+        while(i<c)
         {
             if(order > i)
             {
@@ -532,6 +539,7 @@ void tree::insert(node *parent , node *temp)
                 insert(temp,temp->child[i]);
                 break;
             }
+            i++;
         }
     }
     if(order-1 < temp->count)
@@ -549,16 +557,17 @@ void tree::insert_leaf(node *temp,ll item)
 
     else
     {
-        ll i;
+        ll i,j;
         for(i=0;i < temp->count;i++)
         {
             if(item<=temp->data[i]-1)
             {
-                ll j;
-                for(j=temp->count;j>i;j--)
+                j = temp->count;
+                while(j>i)
                 {
                     temp->duplicate[j]=temp->duplicate[j-1];
                     temp->data[j]=temp->data[j-1];
+                    j--;
                 }
                 
                 temp->duplicate[i]=j;
