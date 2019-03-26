@@ -3,24 +3,24 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
+#define ull long long
 
-ll convert_string_to_int(string s);
-ll rehash();
-ll hashing(ll input);
-ll split();
-ll linear_hashing(ll input, ll size);
-ll write_output(vector<ll> v);
+ull convert_string_to_int(string s);
+ull rehash();
+ull hashing(ull input);
+ull split();
+ull linear_hashing(ull input, ull size);
+ull write_output(vector<ull> v);
 
-ll m , b;     		
-ll split_ptr,split_val;				
-ll hash_value = 2;
-ll number_of_records = 0;
+ull m , b;     		
+ull split_ptr,split_val;				
+ull hash_value = 2;
+ull number_of_records = 0;
 char* f_name;
-ll bucket_size;
+ull bucket_size;
 ifstream file_name;
-vector<set<ll> > v; 		
-vector<ll> output; 
+vector<set<ull> > v; 		
+vector<ull> output; 
 
 int main(int argc , char** argv)
 {
@@ -39,15 +39,15 @@ int main(int argc , char** argv)
 	cout<<"number of buffers: "<<m<<endl;
 	cout<<"\nbuffer size: "<<b<<endl;
 	bucket_size = (b/4);
-	set <ll> t0,t1;
+	set <ull> t0,t1;
 	v.push_back(t0);
 	v.push_back(t1);
 	split_ptr = 0;
 	split_val = 2;
 	
-	ll flag = 1,i;
-	vector < vector <ll> > input(m - 1, vector<ll> (b) );
-	ll j;
+	ull flag = 1,i;
+	vector < vector <ull> > input(m - 1, vector<ull> (b) );
+	ull j;
 	cout<<"\n\nOUTPUT \n";
 	while(flag)					
 	{   		
@@ -56,7 +56,7 @@ int main(int argc , char** argv)
 			j=0;
 			while(j < b)
 			{
-				ll x;
+				ull x;
 				if(infile >> x)
 				{	
 					input[i][j] = x;
@@ -74,18 +74,18 @@ int main(int argc , char** argv)
 			}		
 		}
 		
-		ll p=0;
+		ull p=0;
 
 		for( p=0;p<i;p++)
 		{
-			for(ll q=0;q<b;q++)
+			for(ull q=0;q<b;q++)
 			{
 				hashing(input[p][q]);
 			}	
 		}
 		if(i<=m-2)
 		{
-			ll q=0;
+			ull q=0;
 			while(q<j)
 			{
 				hashing(input[p][q]);
@@ -99,9 +99,9 @@ int main(int argc , char** argv)
 	return 0;
 }
 
-ll linear_hashing(ll input, ll size)
+ull linear_hashing(ull input, ull size)
 {
-	ll x;
+	ull x;
 	x = input % hash_value;
 	// cout<<"x="<<x<<" ";
 	if(input < 0)
@@ -111,8 +111,8 @@ ll linear_hashing(ll input, ll size)
 
 	while(x > size)
 	{
-		ll temp = x;
-		ll bt = -1;
+		ull temp = x;
+		ull bt = -1;
 
 		while(temp)
 		{
@@ -126,21 +126,21 @@ ll linear_hashing(ll input, ll size)
 	return x;
 }
 
-ll convert_string_to_int(string s)
+ull convert_string_to_int(string s)
 {
-	ll x;
+	ull x;
 	stringstream ss(s);
 	ss>>x;
 	return x;
 }
 
-ll rehash()
+ull rehash()
 {
-	vector<ll> temp;
-	set <ll > ::iterator it = v[split_ptr].begin();
+	vector<ull> temp;
+	set <ull > ::iterator it = v[split_ptr].begin();
 	while(it!=v[split_ptr].end())
 	{
-		ll index = linear_hashing(*it,v.size());
+		ull index = linear_hashing(*it,v.size());
 		if(split_ptr != index)
 		{
 			temp.push_back(*it);
@@ -149,23 +149,23 @@ ll rehash()
 		}	
 		it++;
 	}	
-	ll i = 0;
+	ull i = 0;
 	while(i<temp.size())
 	{
-		ll index = linear_hashing(temp[i],v.size());
+		ull index = linear_hashing(temp[i],v.size());
 		v[index].insert(temp[i]);
 		i++;
 	}	
 	return 0;
 }
 
-ll split()
+ull split()
 {
 	bucket_size += (b/4);
 	
-	set<ll> s;
+	set<ull> s;
 	v.push_back(s);
-	hash_value = 1<<(ll)(ceil(log2(v.size())));
+	hash_value = 1<<(ull)(ceil(log2(v.size())));
 
 	rehash();
 	
@@ -176,12 +176,12 @@ ll split()
 	return 0;
 }
 
-ll hashing(ll input)
+ull hashing(ull input)
 {
-	ll number_of_buckets = v.size() - 1;
-	ll index;
+	ull number_of_buckets = v.size() - 1;
+	ull index;
 	index = linear_hashing(input,number_of_buckets);
-	ll size_of_bucket;
+	ull size_of_bucket;
 	size_of_bucket = v[index].size();
 	v[index].insert(input);
 	if(v[index].size() > size_of_bucket)
@@ -208,10 +208,10 @@ ll hashing(ll input)
 	return 0;	
 }
 
-ll write_output(vector<ll> v)
+ull write_output(vector<ull> v)
 {
 	ofstream outfile("output.txt",ios_base::app);
-	ll i =0;
+	ull i =0;
 	while(i<output.size())
 	{
 		outfile<<output[i]<<endl;
