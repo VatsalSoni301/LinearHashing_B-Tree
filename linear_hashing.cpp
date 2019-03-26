@@ -44,10 +44,10 @@ int main(int argc , char** argv)
 	v.push_back(t1);
 	split_ptr = 0;
 	split_val = 2;
-	
+	ull p=0;
 	ull flag = 1,i;
 	vector < vector <ull> > input(m - 1, vector<ull> (b) );
-	ull j;
+	ull j,x;
 	cout<<"\n\nOUTPUT \n";
 	while(flag)					
 	{   		
@@ -56,10 +56,10 @@ int main(int argc , char** argv)
 			j=0;
 			while(j < b)
 			{
-				ull x;
 				if(infile >> x)
 				{	
-					input[i][j] = x;
+					ll y=x;
+					input[i][j] = y;
 				}	
 				else
 				{
@@ -68,20 +68,22 @@ int main(int argc , char** argv)
 				}	
 				j++;
 			}
-			if(!flag)
+			if(flag==0)
 			{
 				break;
 			}		
 		}
-		
-		ull p=0;
-
-		for( p=0;p<i;p++)
+		p=0;
+		ull q;
+		for(p<i)
 		{
-			for(ull q=0;q<b;q++)
+			q=0;
+			while(q<b)
 			{
 				hashing(input[p][q]);
+				q++;
 			}	
+			p++;
 		}
 		if(i<=m-2)
 		{
@@ -111,15 +113,14 @@ ull linear_hashing(ull input, ull size)
 
 	while(x > size)
 	{
-		ull temp = x;
 		ull bt = -1;
+		ull temp = x;
 
-		while(temp)
+		for(temp>0;temp/=2)
 		{
 			bt+=1;
-			temp/=2;
 		}	
-		x^=1<<bt;
+		x=x ^ 1<<bt;
 	}	
 	// cout<<"x="<<x;
 	// cout<<endl;
@@ -178,12 +179,12 @@ ull split()
 
 ull hashing(ull input)
 {
-	ull number_of_buckets = v.size() - 1;
-	ull index;
+	ull index,number_of_buckets = v.size() - 1,size_of_bucket;
 	index = linear_hashing(input,number_of_buckets);
-	ull size_of_bucket;
 	size_of_bucket = v[index].size();
+
 	v[index].insert(input);
+
 	if(v[index].size() > size_of_bucket)
 	{
 		number_of_records++;
