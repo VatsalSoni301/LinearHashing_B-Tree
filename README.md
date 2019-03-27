@@ -13,9 +13,9 @@
 * `g++ BTree.cpp -o BTree`
 * `./BTree.out filename M B`
 * It accepts three command line argument
-1. InputfileName 
-2. Number of Buffers 
-3. Size of Buffer
+* 1. InputfileName 
+* 2. Number of Buffers 
+* 3. Size of Buffer
 * In above command input filename contains all queries like insert key,find key,count etc..
 * It executes all queries that are present in the file and store output of each query in output.txt file.
 
@@ -33,7 +33,7 @@
 * `g++ linear_hashing.cpp -o hash`
 * `./hash.out filename M B`
 * It accepts three command line argument
-1. InputfileName 
-2. Number of Buffers 
-3. Size of Buffer
-* It executes all queries that are present in the file and store output of each query in output.txt file.
+* 1. InputfileName 
+* 2. Number of Buffers 
+* 3. Size of Buffer
+* It executes all queries that are present in the file and display output of each query in terminal as well as store output in output.txt file.
