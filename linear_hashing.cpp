@@ -58,7 +58,7 @@ int main(int argc , char** argv)
 			{
 				if(infile >> x)
 				{	
-					ll y=x;
+					ull y=x;
 					input[i][j] = y;
 				}	
 				else
@@ -75,7 +75,7 @@ int main(int argc , char** argv)
 		}
 		p=0;
 		ull q;
-		for(p<i)
+		while(p<i)
 		{
 			q=0;
 			while(q<b)
@@ -116,7 +116,7 @@ ull linear_hashing(ull input, ull size)
 		ull bt = -1;
 		ull temp = x;
 
-		for(temp>0;temp/=2)
+		for(;temp>0;temp/=2)
 		{
 			bt+=1;
 		}	
