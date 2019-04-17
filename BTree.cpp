@@ -59,7 +59,8 @@ struct tree 				// structure of tree
 
 int main(int argc, char* argv[])
 {
-    ios_base::sync_with_stdio(false);
+    // printf("AAA");
+    // ios_base::sync_with_stdio(false);
 
     // if parameters are not valid
     if(argc != 4)          
@@ -70,23 +71,23 @@ int main(int argc, char* argv[])
 
     f_name = argv[1];
 
-    m = convert_to_int(argv[2]);
+    m = atoi(argv[2]);
 
-    BlockSize = convert_to_int(argv[3]);
-
-    ifstream infile(f_name);
+    BlockSize = atoi(argv[3]);
     
     double bz = (double)BlockSize + 4;
 
     order=ceil(bz/12); 
-
+    // printf("%lld",order);
+    ifstream infile(f_name);
     int flag = 1;
     int i;
     
-    vector<vector<string>> input(m-1,vector<string>(BlockSize));
-    // while there is unread records in input file , run the loop
+    // // while there is unread records in input file , run the loop
     while(flag)                 
     {    
+    	// cout<<"ABC";
+    	vector<vector<string>> input(m-1,vector<string>(BlockSize));
         int j;
         for(i = 0 ; i < m - 1 ; i++)
         {
@@ -94,19 +95,19 @@ int main(int argc, char* argv[])
             while(j < BlockSize)
             {
                 string x;
-                if(!getline(infile,x))
+                if(getline(infile,x))
                 {   
-                    flag = 0;  
-                    break;
+                	input[i][j] = x;
                 }   
                 else
                 {
-                    input[i][j] = x;
+               		flag = 0;  
+                    break;
                     // string query = get_type_of_query(l);
                 }   
                 j++;
             }
-            if(!flag)
+            if(flag==0)
                 break;  
         }
 
@@ -115,7 +116,7 @@ int main(int argc, char* argv[])
         for ( y = 0; y <= i-1; y++)
         {
             ll z;
-            for (z = 0; z<input[y].size(); z+=1)
+            for (z = 0; z<=BlockSize-1; z+=1)
             {
                 t.query_process(output,input[y][z]);
                 if(output.size()>BlockSize)write_file(output);
@@ -124,7 +125,7 @@ int main(int argc, char* argv[])
         if(i<=m-2)
         {
             ll z;
-            for(z=0;z<input[i].size();++z)
+            for(z=0;z<=j-1;++z)
             {
                 t.query_process(output,input[i][z]);
                 if(output.size()>BlockSize)write_file(output);   
@@ -221,7 +222,8 @@ void tree::duplicate_inc(node *temp)
             {
                 fg = 1;
                 temp->duplicate[i]= temp->duplicate[i] + 1;
-                break;
+                // break;
+                return;
             }
         }
         else
@@ -239,9 +241,9 @@ void tree::split_node(node *parent,node *temp)
     if(temp==root)
     {
         root=create_node(leaf);
-        parent=root;
         root->data[0]=temp->data[order/2];
         root->count=root->count+1;
+        parent=root;
         parent->child[0]=temp;
 
         flag=0;
@@ -260,12 +262,12 @@ void tree::split_node(node *parent,node *temp)
                  i--;
             }
 
-            parent->child[y+1] = create_node(leaf);
-
             if(temp->child[0] == NULL)
                 leaf = 1;
             else 
                 leaf = 0;
+
+            parent->child[y+1] = create_node(leaf);
             
             
             ll z=0;
@@ -276,17 +278,19 @@ void tree::split_node(node *parent,node *temp)
                 z++;
             }
             
-            ll zt = order/2;
-            zt++;
-            
-            ll pmax = zt-1;
+            ll zt = order/2+1;
+            for(z=zt;z<order+1;z+=1)
+                temp->child[z]=NULL;
+            // zt++;
+            ll pmax = order/2;
             temp->count=pmax;
             pmax=order-(order/2+1-leaf);
-
-            for(z=zt;z<=order;z++)
-                temp->child[z] = NULL;
-
             (parent->child[y+1])->count=pmax;
+
+            // for(z=zt;z<=order;z++)
+            //     temp->child[z] = NULL;
+
+            
             
             ll k=0;
             zt=order/2+1-leaf;
@@ -295,6 +299,10 @@ void tree::split_node(node *parent,node *temp)
                 (parent->child[y+1])->duplicate[k]=temp->duplicate[z];
                 (parent->child[y+1])->data[k]=temp->data[z];
                 k+=1;
+            }
+            if(flag==1)
+            {
+                insert_leaf(parent,temp->data[order/2]);
             }
             if (leaf == 0)
             {
@@ -305,11 +313,6 @@ void tree::split_node(node *parent,node *temp)
                 (parent->child[y+1])->ngh=temp->ngh;
                 ll p;
                 temp->ngh=parent->child[y+1];
-            }
-
-            if(flag==1)
-            {
-                insert_leaf(parent,temp->data[order/2]);
             }
             break;
         }
@@ -359,8 +362,8 @@ ll tree::range_query(ll low,ll high)
         }
         else if(low < temp->data[i] || ((i + 1) == (temp->count + 1)))
         {
-            i=0;
             temp=temp->child[i];
+            i=0;
         }
         else
         {
@@ -452,7 +455,7 @@ void tree::query_process(vector<string> &out,string l)
         
         ll i=0;
         node *temp=root;
-        ll ans;
+        ll ans=0;
 
         while(temp)
         {
@@ -464,14 +467,14 @@ void tree::query_process(vector<string> &out,string l)
 
             else if((item<=temp->data[i]-1) || i == temp->count)
             {
-                i=0;
                 temp=temp->child[i];
+                i=0;
             }
             else
                 i++;
         }
-        if(!temp)
-            ans = 0;
+        // if(!temp)
+        //     ans = 0;
 
         string s1 = getString(ans);
 
@@ -496,23 +499,18 @@ void tree::insert(node *parent , node *temp)
     else if(temp->child[0] == NULL)
     {
         ll i=0;
-        ll fg = 0;
-        while(i < temp->count)
+        for(i=0;i<=temp->count-1;i=i+1)
         {
-            // If repeat then duplicate_inc duplicate value
-            if(temp->data[i] == item)
+            if(temp->data[i]!=item)
+                continue;
+            else
             {
                 duplicate_inc(temp);
-                fg = 1;
-                break;
+                return;
             }
-            i++;
         }
-        // Otherwise insert data into leaf node
-        if(fg == 0)
-        {
-            insert_leaf(temp,item);
-        }
+        insert_leaf(temp,item);
+        i-=1;
     }
     else if(item>=temp->data[temp->count-1])
     {
@@ -569,7 +567,7 @@ void tree::insert_leaf(node *temp,ll item)
                     temp->data[j]=temp->data[j-1];
                     j--;
                 }
-                
+                j=1;
                 temp->duplicate[i]=j;
                 temp->data[i]=item;
 
